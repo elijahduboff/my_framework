@@ -26,7 +26,7 @@ class MyFramework:
         # Обработка POST и  GET запросов
         if method == 'POST':
             data = PostRequests().get_request_params(environ)
-            request['data'] = data
+            request['data'] = MyFramework.decode_value(data)
             print(f'Нам пришел POST запрос {MyFramework.decode_value(data)}')
         if method == 'GET':
             data = GetRequests.get_request_params(environ)
@@ -52,9 +52,11 @@ class MyFramework:
 
     @staticmethod
     def decode_value(data):
+        print(data)
         new_data = {}
         for k, v in data.items():
             val = bytes(v.replace('%', '=').replace("+", " "), 'UTF-8')
             val_decode_str = quopri.decodestring(val).decode('UTF-8')
             new_data[k] = val_decode_str
+        print(new_data)
         return new_data

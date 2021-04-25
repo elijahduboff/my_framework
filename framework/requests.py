@@ -63,7 +63,7 @@ class PostRequests:
         """
         content_lenght_data = environ.get('CONTENT_LENGTH')
         content_lenght = int(content_lenght_data) if content_lenght_data else 0
-        data = environ['wsgi.input'].read(content_lenght) if content_lenght_data > 0 else b''
+        data = environ['wsgi.input'].read(content_lenght) if content_lenght > 0 else b''
         return data
 
     def parse_wsgi_input_data(self, data: bytes) -> dict:
@@ -85,6 +85,6 @@ class PostRequests:
         :return: data тело запроса в словаре
         """
         data = self.get_wsgi_input_data(environ)
-        data = self.get_wsgi_input_data(data)
+        data = self.parse_wsgi_input_data(data)
         return data
 

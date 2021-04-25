@@ -1,14 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1> Наши контакты </h1>
-    <h2> Телефон </h2>
-    <p> {{data}} </p>
-    <h2> EMAIL </h2>
-    <p> {{data}} </p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}
+О нас
+{% endblock %}
+{% block menu %}
+{% include "inc_menu.html" %}
+{% endblock %}
+{% block body %}
+<div class="feedback">
+    <a class="closemsg" href="#">&times;</a>
+    <form id="feedback_form" class="contact" action="" method="post">
+        <div class="h3">Обратный звонок</div>
+        <input type="text" name="feedback[name]" value="" class="required" placeholder="Имя"/>
+        <input type="text" name="feedback[phone]" value="" class="required" placeholder="Телефон"/>
+        <input type="hidden" name="feedback[from]" placeholder="E-mail" value="fast@call.com"/>
+        <input type="hidden" name="feedback[subject]" value="Обратный звонок"/>
+        <textarea name="feedback[content]" value="" class="required" placeholder="Комментарий"></textarea>
+        <div class="submit"><input type="submit" value="Отправить"/></div>
+    </form>
+</div>
+{% endblock %}
