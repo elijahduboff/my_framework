@@ -23,6 +23,7 @@ class MyFramework:
         # Формируем словарь запроса и получаем его тип
         request = {}
         method = environ['REQUEST_METHOD']
+        request['method'] = method
         # Обработка POST и  GET запросов
         if method == 'POST':
             data = PostRequests().get_request_params(environ)

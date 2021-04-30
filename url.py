@@ -4,7 +4,13 @@ import views
 
 urlpatterns = {
     '/': views.Index(),
-    '/about/': views.About()
+    '/about/': views.About(),
+    '/study-programs/': views.StudyPrograms(),
+    '/course-list/': views.CourseList(),
+    '/create-course/': views.CreateCourse(),
+    '/category-list/': views.CategoryList(),
+    '/create-category/': views.CreateCategory(),
+    '/copy-course/': views.CopyCourse()
 }
 
 
