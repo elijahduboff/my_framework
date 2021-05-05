@@ -2,35 +2,47 @@ from datetime import date
 
 from framework.render import render
 from patterns.creational_patterns import University, Logger
+from patterns.structural_patterns import AppRoute, Debug
 
 site = University()
 logger = Logger('main')
+views = {}
 
 
+@AppRoute(views=views, url='/')
 class Index:
     """ Контроллер - главная старница"""
 
+    @Debug(name='index')
     def __call__(self, request):
+        print(request)
+        print(views)
         return '200 OK', render('index.html', objects_list=site.categories)
 
 
+@AppRoute(views=views, url='/about/')
 class About:
     """ Контроллер о компании """
 
+    @Debug(name='about')
     def __call__(self, request):
         return '200 OK', render('about.html')
 
 
+@AppRoute(views=views, url='/study-programs/')
 class StudyPrograms:
     """ Контроллер с учебными программами """
 
+    @Debug(name='study_programs')
     def __call__(self, request):
         return '200 OK', render('study_programs.html', data=date.today())
 
 
+@AppRoute(views=views, url='/course-list/')
 class CourseList:
     """ Контроллер списка курсов"""
 
+    @Debug(name='course_list')
     def __call__(self, request):
         logger.log('Список курсов')
         try:
@@ -41,10 +53,12 @@ class CourseList:
             return '200 OK', 'No course have been added yet'
 
 
+@AppRoute(views=views, url='/create-course/')
 class CreateCourse:
     """ Контроллер создания курса """
     category_id = -1
 
+    @Debug(name='create_course')
     def __call__(self, request):
         if request['method'] == 'POST':
             data = request['data']
@@ -53,7 +67,7 @@ class CreateCourse:
             category = None
             if self.category_id != -1:
                 category = site.find_category_by_id(int(self.category_id))
-                course = site.create_course('record', name, category)
+                course = site.create_course('video', name, category)
                 site.courses.append(course)
             return '200 OK', render('course_list.html', objects_list=category.courses, name=category.name,
                                     id=category.id)
@@ -66,17 +80,21 @@ class CreateCourse:
                 return '200 OK', 'No categories have been added yet'
 
 
+@AppRoute(views=views, url='/category-list/')
 class CategoryList:
     """ Контроллер для списка категорий """
 
+    @Debug(name='category_list')
     def __call__(self, request):
         logger.log('Список категорий')
         return '200 OK', render('category_list.html', objects_list=site.categories)
 
 
+@AppRoute(views=views, url='/create-category/')
 class CreateCategory:
     """ Контроллер для создания категории """
 
+    @Debug(name='create_category')
     def __call__(self, request):
         print(request)
         if request['method'] == 'POST':
@@ -95,9 +113,11 @@ class CreateCategory:
             return '200 OK', render('create_category.html', categories=categories)
 
 
+@AppRoute(views=views, url='/copy-course/')
 class CopyCourse:
     """ Контроллер для копирования курса """
 
+    @Debug(name='copy_course')
     def __call__(self, request):
         request_params = request['request_params']
         try:
