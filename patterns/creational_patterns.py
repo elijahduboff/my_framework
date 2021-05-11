@@ -1,10 +1,17 @@
 import copy
 import quopri
 
+from patterns.behavioural_patterns import ConsoleLogger
+
 
 class User:
     """ Класс абстрактного пользователя """
-    pass
+    auto_id = 0
+
+    def __init__(self, name):
+        self.id = User.auto_id
+        User.auto_id += 1
+        self.name = name
 
 
 class Student(User):
@@ -25,9 +32,9 @@ class UserFactory:
     }
 
     @classmethod
-    def create(cls, type_):
+    def create(cls, type_, name):
         """ Пораждающий паттерн фабричный метод """
-        return cls.types[type_]()
+        return cls.types[type_](name)
 
 
 class CoursePrototype:
@@ -97,8 +104,8 @@ class University:
         self.categories = []
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     @staticmethod
     def create_category(name, category=None):
@@ -119,6 +126,11 @@ class University:
             if course.name == name:
                 return course
         return None
+
+    def get_student(self, name) -> Student:
+        for item in self.students:
+            if item.name == name:
+                return item
 
     @staticmethod
     def decode_value(val):
@@ -149,9 +161,9 @@ class SingletoneByName(type):
 class Logger(metaclass=SingletoneByName):
     """ Класс логирования с использованием порождающего паттерна Синглтон """
 
-    def __init__(self, name):
+    def __init__(self, name, writer=ConsoleLogger()):
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
-        print(f'log ---> {text}')
+    def log(self, text):
+        self.writer.write(text)

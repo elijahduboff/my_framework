@@ -1,11 +1,15 @@
 from datetime import date
 
 from framework.render import render
+from patterns.behavioural_patterns import EmailNotifier, SMSNotifier, ListView, CreateView, BaseSerializer
 from patterns.creational_patterns import University, Logger
 from patterns.structural_patterns import AppRoute, Debug
 
 site = University()
 logger = Logger('main')
+email_notifier = EmailNotifier()
+sms_notifier = SMSNotifier()
+
 views = {}
 
 
@@ -15,8 +19,6 @@ class Index:
 
     @Debug(name='index')
     def __call__(self, request):
-        print(request)
-        print(views)
         return '200 OK', render('index.html', objects_list=site.categories)
 
 
@@ -132,3 +134,47 @@ class CopyCourse:
             return '200 OK', render('course_list.html', objects_list=site.courses)
         except KeyError:
             return '200 OK', 'No courses have been added yet'
+
+
+@AppRoute(views=views, url='/student-list/')
+class StudentListView(ListView):
+    queryset = site.students
+    template_name = 'student_list.html'
+
+
+@AppRoute(views=views, url='/create-student/')
+class StudentCreateView(CreateView):
+    template_name = 'create_student.html'
+
+    def create_obf(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_user('student', name)
+        site.students.append(new_obj)
+
+
+@AppRoute(views=views, url='/add-student/')
+class AddStudentByCourseCreateView(CreateView):
+    template_name = 'add_student.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['courses'] = site.courses
+        context['students'] = site.students
+        return context
+
+    def create_obf(self, data):
+        course_name = data['course_name']
+        course_name = site.decode_value(course_name)
+        course = site.get_course(course_name)
+        student_name = data['student_name']
+        student_name = site.decode_value(student_name)
+        student = site.get_student(student_name)
+        course.add_student(student)
+
+
+@AppRoute(views=views, url='/api/v1')
+class CourseApi:
+    @Debug(name='CourseApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.courses).save()
